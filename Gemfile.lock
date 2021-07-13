@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.7.0)
+    addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     amazing_print (1.2.2)
     byebug (11.1.1)
@@ -50,7 +50,7 @@ GEM
     pry-byebug (3.8.0)
       byebug (~> 11.0)
       pry (~> 0.10)
-    public_suffix (4.0.3)
+    public_suffix (4.0.6)
     representable (3.0.4)
       declarative (< 0.1.0)
       declarative-option (< 0.2.0)
