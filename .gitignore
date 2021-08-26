@@ -3,3 +3,4 @@ profile/
 profile-*/
 .bundle/
 config.json
+config.yml

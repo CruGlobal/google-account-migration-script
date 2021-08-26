@@ -1,3 +1,16 @@
+require 'bundler/inline'
+gemfile do
+  source 'https://rubygems.org'
+
+  gem 'activesupport'
+  gem 'selenium-webdriver'
+  gem 'google_drive'
+  gem 'pry-byebug'
+  gem 'yaml'
+  gem 'oktakit'
+end
+
+require 'active_support/all'
 require 'selenium-webdriver'
 require 'google_drive'
 require 'pry-byebug'
@@ -58,7 +71,6 @@ def user_data_dir
 end
 
 def connect_to_drive_file
-  # how?
   session = GoogleDrive::Session.from_config("config.json")
   ws = session.spreadsheet_by_key(SPREADSHEET_KEY).worksheets[SHEET_INDEX]
   @headers = ws.rows.first.map(&:strip)
@@ -82,6 +94,8 @@ end
 # 5 Search on "C" then change then change Google Organization, (wait)
 # 6 Search on "C" then change aliases
 def run_cleanup(r, index)
+  return unless filter_row?(r)
+
   @okta_user = nil
   return if r[NOTE_COLUMN_INDEX] == 'success'
   puts ''
@@ -92,11 +106,10 @@ def run_cleanup(r, index)
 
   set_password(r)
 
-  sleep 1
-  go_to_profile(r, new_email)
-  reset_the_key_mfa
-
-  reset_okta_mfa(r)
+  if r[PASSWORD_COLUMN_INDEX].present?
+    reset_the_key_mfa(r)
+    reset_okta_mrowa(r)
+  end
 
   change_group(r)
 
@@ -109,6 +122,10 @@ def run_cleanup(r, index)
 rescue => error
   puts error.backtrace
   save_note(index + START_ROW_NUMBER, error.message)
+end
+
+def filter_row?(r)
+  r[EXISTING_EMAIL_COLUMN_INDEX].present?
 end
 
 # done
@@ -185,14 +202,17 @@ end
 def set_password(row)
   print ", password"
   return if $dry_run
+  return unless row[PASSWORD_COLUMN_INDEX].present?
 
   okta_client.update_profile(okta_email(row), credentials: { password: { value: row[PASSWORD_COLUMN_INDEX] } })
   okta_user_id = okta_user(okta_email(row), true)[:id]
   okta_client.expire_password(okta_user_id)
+  sleep 2
 end
 
 # done
-def reset_the_key_mfa
+def reset_the_key_mfa(row)
+  go_to_profile(row, new_email)
   @browser.find_element(css: '[data-target="#mfaCollapsible"]').click
 
   mfa_enabled = @browser.find_elements(css: '[name="_eventId_resetMfaSecret"]').count > 0
@@ -213,13 +233,18 @@ def reset_okta_mfa(row)
 end
 
 def change_group(row)
-  return if group_name(row).to_s == ''
+  return if group_names(row)&.empty?
 
-  okta_group_id = find_group_id(group_name(row))
-  okta_user_id = okta_user(okta_email(row), true)[:id]
+  group_names(row).each do |group_name|
+    okta_group_id = find_group_id(group_name)
+    okta_user_id = okta_user(okta_email(row), true)[:id]
 
-  puts "I would have added #{okta_user_id} to group #{okta_group_id}" and return if $dry_run
-  okta_client.add_user_to_group(okta_group_id, okta_user_id)
+    if $dry_run
+      puts "I would have added #{okta_user_id} to group #{okta_group_id}"
+      next
+    end
+    okta_client.add_user_to_group(okta_group_id, okta_user_id)
+  end
 end
 
 def find_group_id(group_name)
@@ -228,29 +253,38 @@ def find_group_id(group_name)
   resp.first[:id]
 end
 
-def group_name(row)
-  return if [nil, ''].include? G_GROUP_NAME
-  return G_GROUP_NAME if G_GROUP_NAME.is_a? String
+def group_names(row)
+  return if G_GROUP_NAME.is_a?(String) && !G_GROUP_NAME.strip.present?
+  return Array.wrap(G_GROUP_NAME) if G_GROUP_NAME.is_a?(String) || G_GROUP_NAME.is_a?(Array)
 
-  group_name = row[G_GROUP_NAME]
-  return if [nil, ''].include? group_name
-  group_name
+  group_names = row[G_GROUP_NAME]
+  return if group_names.nil?
+  group_names.split(',').map(&:strip).reject { |s| s == '' }
 end
 
 def add_aliases(row)
   aliases = row[ALIAS_COLUMN_INDEX].to_s.downcase.strip
   return unless aliases.length > 0
 
-  existing_aliases = okta_profile(okta_email(row))[:emailAliases] || []
-  new_aliases = aliases.split(" ")
-  combined_aliases = (existing_aliases + new_aliases.map(&:strip)).uniq
+  okta_aliases = okta_profile(okta_email(row))[:emailAliases] || []
+  existing_fixed_aliases = okta_aliases.map { |s| s.split(',') }.flatten.uniq
+  new_aliases = aliases.split(/[ ,]/).map(&:strip)
+  combined_aliases = (existing_fixed_aliases + new_aliases).uniq
 
-  okta_client.update_profile(okta_email(row), profile: { emailAliases: combined_aliases })
+  different_aliases = combined_aliases - okta_aliases
+
+  if $dry_run
+    puts "I would have added #{different_aliases} as alias"
+    return
+  end
+  okta_client.update_profile(okta_email(row), profile: { emailAliases: combined_aliases }) if different_aliases.any?
 end
 
 def save_note(row_number, text)
+  return if @file[row_number, NOTE_COLUMN_INDEX + 1] == text
   @file[row_number, NOTE_COLUMN_INDEX + 1] = text
   @file.save
+  sleep 0.5
 end
 
 def run
