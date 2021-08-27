@@ -26,7 +26,6 @@ end
 require_relative 'helpers.rb'
 
 CONFIG = YAML.load_file("config.yml")
-puts CONFIG
 raise 'No config given' if CONFIG == false || CONFIG.keys.none?
 
 CAS_MANAGE_SEARCH_PAGE = 'https://thekey.me/cas-management/users/admin'
@@ -107,8 +106,8 @@ def run_cleanup(r, index)
   set_password(r)
 
   if r[PASSWORD_COLUMN_INDEX].present?
-    reset_the_key_mfa(r)
-    reset_okta_mrowa(r)
+    reset_the_key_mfa(r, new_email)
+    reset_okta_mfa(r)
   end
 
   change_group(r)
@@ -211,7 +210,7 @@ def set_password(row)
 end
 
 # done
-def reset_the_key_mfa(row)
+def reset_the_key_mfa(row, new_email)
   go_to_profile(row, new_email)
   @browser.find_element(css: '[data-target="#mfaCollapsible"]').click
 
