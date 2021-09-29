@@ -1,0 +1,22 @@
+spreadsheet:
+  key: 1lDtVOHbszVSbMnxVrQT1LrnWS8P9Np-CxIwQMnK6Cd4
+  index: 2
+
+g_group_name:
+  - 'Okta:Users:NAO:Australia'
+  - 'G_Suite:Users:NAO:Australia'
+
+start_row_number: 3
+end_row_number: 54
+
+existing_email_column_index: S
+desired_email_column_index: C
+first_name_column_index: D
+preferred_name_column_index:
+last_name_column_index: E
+password_column_index: W
+note_column_index: X
+alias_column_index: H
+
+okta_token: 'test'
+okta_api_endpoint: https://signon-admin.okta.com/api/v1

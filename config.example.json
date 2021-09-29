@@ -1,0 +1,9 @@
+{
+  "client_id": "asdfqwer.apps.googleusercontent.com",
+  "client_secret": "secret_client_token",
+  "scope": [
+    "https://www.googleapis.com/auth/drive",
+    "https://spreadsheets.google.com/feeds/"
+  ],
+  "refresh_token": "refresh_token_goes_here"
+}
