@@ -48,7 +48,7 @@ PASSWORD_COLUMN_INDEX= char_to_col_index CONFIG['password_column_index']
 NOTE_COLUMN_INDEX= char_to_col_index CONFIG['note_column_index']
 ALIAS_COLUMN_INDEX= char_to_col_index CONFIG['alias_column_index']
 
-$change_email_allowed = false
+$change_email_allowed = true
 $dry_run = true
 $only_one = true
 
@@ -105,7 +105,7 @@ def run_cleanup(r, index)
 
   set_password(r)
 
-  if r[PASSWORD_COLUMN_INDEX].present?
+  if PASSWORD_COLUMN_INDEX.present? && r[PASSWORD_COLUMN_INDEX].present?
     reset_the_key_mfa(r, new_email)
     reset_okta_mfa(r)
   end
@@ -201,7 +201,7 @@ end
 def set_password(row)
   print ", password"
   return if $dry_run
-  return unless row[PASSWORD_COLUMN_INDEX].present?
+  return unless PASSWORD_COLUMN_INDEX.present? && row[PASSWORD_COLUMN_INDEX].present?
 
   okta_client.update_profile(okta_email(row), credentials: { password: { value: row[PASSWORD_COLUMN_INDEX] } })
   okta_user_id = okta_user(okta_email(row), true)[:id]
