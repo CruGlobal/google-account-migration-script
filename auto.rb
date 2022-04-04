@@ -274,6 +274,7 @@ def add_aliases(row)
 
   if $dry_run
     puts "I would have added #{different_aliases} as alias"
+    puts "Debug: o_a: #{okta_aliases}\ne_f_a: #{existing_fixed_aliases}\nn_a: #{new_aliases}\nc_a: #{combined_aliases}"
     return
   end
   okta_client.update_profile(okta_email(row), profile: { emailAliases: combined_aliases }) if different_aliases.any?

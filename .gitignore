@@ -4,3 +4,4 @@ profile-*/
 .bundle/
 config.json
 config.yml
+key_login.rb
