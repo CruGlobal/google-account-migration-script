@@ -17,7 +17,7 @@ require 'pry-byebug'
 require 'yaml'
 require 'oktakit'
 
-LOGIN_HELPER_FILE = '~/key_login.rb'
+LOGIN_HELPER_FILE = './key_login.rb'
 def login(_browser); end
 if File.file?(File.expand_path LOGIN_HELPER_FILE)
   require LOGIN_HELPER_FILE
