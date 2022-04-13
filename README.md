@@ -37,7 +37,7 @@ This outlines how the script is going to interact and iterate over the data in t
 The first time you run this you'll receive some prompts to fill in a key. Follow the instructions.
 You may also need to allow chromedriver to run from System Preferences / Security & Privacy / General
 
-This will run one dry run. Once you are comfortable, you can turn off dry-run inside the `auto.rb` file.
+This will run one dry run against one row. Once you are comfortable, you can turn off the dry_run and only_one booleans inside the `auto.rb` file.
 
 ## troubleshooting
 
