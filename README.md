@@ -1,6 +1,6 @@
 ## requirements
 
-You must have a modern (2.1+) version of ruby and the chromedriver installed on your path (https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver)
+You must have a modern (2.1+) version of ruby and the chromedriver installed on your path (https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver). Try `brew install chromedriver`.
 
 You must also copy the `config.json` file (which you can get from Mark K. or Shelby B.) into the root of this project.
 
