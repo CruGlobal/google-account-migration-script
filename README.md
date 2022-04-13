@@ -20,7 +20,7 @@ You will need to add your okta/key username and password to this file in the res
 To enable access to google sheets, you will need to include the `cliend_id` and the `client_secret` from the google cloud services. If for some reason Mark K or Shelby B is unavailable to give you these you will need access to [google cloud services](https://console.cloud.google.com/). Someone will need to add you to the "automated google migration" project. From there you can navigate to
 > api's and services -> credentials -> click on "google drive ruby" (under OAuth 2.0 Client IDs)
 
-You will also need to remove the refresh_token. The google_drive gem will autofill it, but you must remove the refresh_token for this to happen.
+You will also need to remove the refresh_token line. The google_drive gem will then tell you what to do, but you must remove the refresh_token for this to happen.
 
 ### config.yml
 
