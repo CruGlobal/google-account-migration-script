@@ -25,7 +25,8 @@ You will also need to remove the refresh_token line. The google_drive gem will t
 ### config.yml
 
 This outlines how the script is going to interact and iterate over the data in the google sheet of interest. 
-- the spreadsheet key will come from the url
+- the spreadsheet key will come from the URL of the sheet in question
+- the spreadsheet index refers to a specific tab of the sheet, and is zero-based
 - start_row_number and end_row_number indicate starting and ending rows
 - to get an okta token you will need to reach out to jason buckner and ask for okta admin priveleges. Once acquired, go to [okta admin api token page](https://signon-admin.okta.com/admin/access/api/tokens) and just create a token with your name. Then copy/paste as the value for okta_token.
 
