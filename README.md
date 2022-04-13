@@ -9,7 +9,7 @@ You must also copy the `config.json` file (which you can get from Mark K. or She
 `bundle install`
 
 ## setup and permissions
-Before you run the script, you will need to create key_login.rb, config.json, and config.yml. Then copy the respective example files and follow the configuration/setup as follows:
+Before you run the script, you will need to create key_login.rb, config.json, and config.yml. Copy the respective example files and follow the configuration/setup as follows:
 
 ### key_login.rb
 
