@@ -42,3 +42,4 @@ This will run one dry run against one row. Once you are comfortable, you can tur
 ## troubleshooting
 
 If you have issues remove the refresh_token from config.json and try running again. The refresh_token expires about every 6 months and will need to be removed so the gem can replace it.
+Also try generating a new okta_token. They disappear if unused for 30 days.
