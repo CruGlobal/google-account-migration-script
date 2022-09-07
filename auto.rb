@@ -49,8 +49,8 @@ NOTE_COLUMN_INDEX= char_to_col_index CONFIG['note_column_index']
 ALIAS_COLUMN_INDEX= char_to_col_index CONFIG['alias_column_index']
 
 $change_email_allowed = true
-$dry_run = false
-$only_one = false
+$dry_run = true
+$only_one = true
 
 def setup_browser
   options = Selenium::WebDriver::Chrome::Options.new
