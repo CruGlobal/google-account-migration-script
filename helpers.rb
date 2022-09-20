@@ -6,17 +6,17 @@ def wait_for(search)
   @browser.find_element(search)
 end
 
-# columns go from: A..Z, AA..AZ, BA..BZ,
+# Supports up to 2-letter columns following pattern: A..Z, AA..AZ, BA..BZ, ZA..ZZ
 def char_to_col_index(char)
   return char if char.is_a? Numeric
   return char if char == nil
-  pos = 0
+
   chars = char.split('')
-  chars.each do |char|
-    # need to be able to calculate columns after AZ
-    # currently only accurate up to AZ
-    pos = char.upcase.ord - 65
+
+  if chars.length == 1
+    total = (chars[0].upcase.ord - 65)
+  elsif chars.length == 2
+    total = ((chars[0].upcase.ord - 64) * 26) + (chars[1].upcase.ord - 65)
   end
-  binding.pry
-  pos = pos + 26 * (chars.length - 1)
+  total
 end
