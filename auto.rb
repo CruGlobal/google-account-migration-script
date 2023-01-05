@@ -48,7 +48,7 @@ PASSWORD_COLUMN_INDEX= char_to_col_index CONFIG['password_column_index']
 NOTE_COLUMN_INDEX= char_to_col_index CONFIG['note_column_index']
 ALIAS_COLUMN_INDEX= char_to_col_index CONFIG['alias_column_index']
 
-$change_email_allowed = true
+$change_email_allowed = false
 $dry_run = true
 $only_one = true
 
@@ -248,17 +248,17 @@ end
 
 def find_group_id(group_name)
   resp, _code = okta_client.list_groups(query: { q: group_name, limit: 1 })
-  raise "group name doesn't match exactly" unless resp.first[:profile][:name] == group_name
+  raise "group name doesn't match exactly" unless resp&.first&.to_h&.dig(:profile, :name) == group_name
   resp.first[:id]
 end
 
 def group_names(row)
   return if G_GROUP_NAME.is_a?(String) && !G_GROUP_NAME.strip.present?
-  return Array.wrap(G_GROUP_NAME) if G_GROUP_NAME.is_a?(String) || G_GROUP_NAME.is_a?(Array)
+  # return Array.wrap(G_GROUP_NAME) if G_GROUP_NAME.is_a?(String) || G_GROUP_NAME.is_a?(Array)
 
-  group_names = row[G_GROUP_NAME]
+  group_names = row[char_to_col_index(G_GROUP_NAME)]
   return if group_names.nil?
-  group_names.split(',').map(&:strip).reject { |s| s == '' }
+  group_names.split(/[ ,]/).map(&:strip).reject { |s| s == '' }
 end
 
 def add_aliases(row)
